@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {io} from 'socket.io-client'
 
 export const DashBoard = () => {
@@ -14,6 +14,9 @@ export const DashBoard = () => {
   const [newCId, setNewCId] = useState("");
   const [socket, setSocket] = useState(null);
   const [rId, setRId] = useState("");
+  const [convUserN, setConvUserN] = useState("");
+  const messageRef = useRef();
+  
 
 
   const fetchUsers = async () => {
@@ -98,7 +101,8 @@ export const DashBoard = () => {
       );
       if (data.success) {
         setMesssages(data.messageUserData);
-        console.log(messages)
+        setConvUserN(messages[0]?.user?.name)
+       
       }
     } catch (err) {
       console.log("error while fetching message", err);
@@ -215,11 +219,14 @@ useEffect(()=>{
           <div>
             <h1>#######Discussion####</h1>
             <div>
-              <h1>From:{messages?.user?.name}</h1>
+              
+              <h1>From: {convUserN}</h1>
               {messages.length > 0 ? (
                 messages?.map((m, i) => (
                   <div key={i}>
+                    <h2>From : {m.user?.name}</h2>
                     <h2>{m.message}</h2>
+                    <div ref={messageRef}></div>
                   </div>
                 ))
               ) : (
@@ -244,7 +251,8 @@ useEffect(()=>{
           <h1>#####Talk To Users######</h1>
           <div>
             {users?.map((u, i) => (
-              <div key={i} onClick={() => setReceiverId(u._id)}>
+              <div key={i} onClick={() =>{ setReceiverId(u._id);  
+              }} >
                 <h1>{u.name}</h1>
                 <h1>{u.email}</h1>
                 <br />
