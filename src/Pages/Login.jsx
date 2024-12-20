@@ -1,3 +1,5 @@
+// eslint-disable-next-line no-unused-vars
+import React from 'react';
 import { useState } from "react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -29,7 +31,7 @@ export const Login = () => {
         <form onSubmit={handleLogin}>
             <input type="email" placeholder="type email" name={email} onChange={(e)=>setEmail(e.target.value)}/>
             <input type="password" placeholder="type email" name={email} onChange={(e)=>setPassword(e.target.value)}/>
-            <button type="submit">Login</button>
+            <button type="submit" className="bg-yellow-500 text-gary-950 p-1 text-center">Login</button>
         </form>
     </div>
     </div>
