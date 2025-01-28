@@ -167,10 +167,7 @@ useEffect(()=>{
         setMesssages(prevMessages => [
           ...prevMessages,
           { conversationId, senderId, message }
-        ]);
-        
-        
-        
+        ]);                        
     })
     return () => {
       socket?.off('getUsers');

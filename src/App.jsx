@@ -1,21 +1,17 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom"
+import {BrowserRouter, Routes, Route} from "react-router-dom"
 import DashBoard from './modules/Dashboard/dashBoard'
+import ProtectedRoute from './Context/ProtectedRoute';
+
 import './App.css'
 import { Login } from "./Pages/Login"
+import AdminPage from './Pages/Admin/AdminPage';
+import RealTimeOrder from './Pages/RealTimeOrder';
+import PassOrderRealTime from './Pages/PassOrderRealTime';
 
 function App() {
 
-  // eslint-disable-next-line react/prop-types
-  const ProtectedRoutes =({children})=>{
-    const isLoggedIn = localStorage.getItem("token");
-    if(!isLoggedIn){
-      return <Navigate to='/'/>
-    }
-
-    return children;
-  }
   
   return (
     <>
@@ -23,11 +19,30 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/chatToService' element={
-          <ProtectedRoutes>
+          <ProtectedRoute >
             <DashBoard />
-          </ProtectedRoutes>
+          </ProtectedRoute>
           } />
+          <Route path='/realTimeOrd' element={
+          <ProtectedRoute >
+            <RealTimeOrder />
+          </ProtectedRoute>
+          } />
+          <Route path='/PassrealTimeOrd' element={
+          <ProtectedRoute >
+            <PassOrderRealTime />
+          </ProtectedRoute>
+          } />
+
         <Route path='/login' element={<Login />} />
+
+
+          <Route path='/admin' element={
+            <ProtectedRoute required='Administrator'>
+              <AdminPage />
+            </ProtectedRoute>
+          } >
+          </Route>
 
       </Routes>
     </BrowserRouter>
