@@ -8,6 +8,7 @@ const RealTimeOrder = () => {
     const [orders, setOrders] = useState([])
     const [acquiredOrd, setAcquiredOrd] = useState("");
 
+    
     useEffect(() => {
 
       
@@ -25,6 +26,7 @@ const RealTimeOrder = () => {
             
         });
 
+        
    
     
         // Cleanup when component unmounts or socket is disconnected
@@ -38,10 +40,14 @@ const RealTimeOrder = () => {
     console.log("New order received:2", orders);
 
     
-
-    const handleAcquireOrder = (order) => {
+    
+    const handleAcquireOrder = (order, index) => {
         console.log("Acquiring order:", order);
+        // To implement ofr backend api setAcquiredOrd(order)
         socket.emit("acquireOrder", { acquiredOrd: order });
+        const l1 = orders.filter((_, i) => i !== index);
+        setOrders(l1)
+        console.log("after filtering", l1 )
     };
 
   return (
@@ -53,7 +59,7 @@ const RealTimeOrder = () => {
                 <h1 >{ord.order.details}</h1>
                 <h1 >{ord.order.desiredTime}</h1>
                 <h1 >{ord.order.category}</h1>
-                <button onClick={()=>handleAcquireOrder(ord)}>Acquire Order</button>
+                <button onClick={()=>handleAcquireOrder(ord, index)}>Acquire Order</button>
 
             </div>
 
