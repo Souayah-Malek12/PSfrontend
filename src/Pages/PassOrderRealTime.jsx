@@ -14,6 +14,8 @@ const PassOrderRealTime = () => {
   const [clientId, setClientId] = useState("");
   const [desiredTime, setDesiredTime] = useState("");
   const [desiredDate, setDesiredDate] = useState("");
+  const [minVal, setMinVal] = useState("");
+  const [maxVal, setMaxVal] = useState("")
 
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -29,7 +31,7 @@ const PassOrderRealTime = () => {
      
 
 
-      const order = {details, coordinates , category, desiredTime, desiredDate};
+      const order = {details, coordinates , category, minVal , maxVal , desiredTime, desiredDate};
       socket.emit("sendOrder", {
         order
       })
@@ -74,6 +76,14 @@ const PassOrderRealTime = () => {
           onChange={(e) => setDetails(e.target.value)}
           required
         />
+      </div>
+      <div>
+        <label>From $ </label>
+        <input type="number" value={minVal} onChange={(e)=> setMinVal(e.target.value)} />
+      </div>
+      <div>
+        <label>To $ </label>
+        <input type="number" value={maxVal} onChange={(e)=> setMaxVal(e.target.value)} />
       </div>
       <div>
         <label>Longitude:</label>
