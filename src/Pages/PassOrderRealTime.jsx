@@ -30,13 +30,13 @@ const PassOrderRealTime = () => {
       //socket sending 
      
 
-
+      //send order to backend return order ord.id send it to socket 
       const order = {details, coordinates , category, minVal , maxVal , desiredTime, desiredDate};
       socket.emit("sendOrder", {
         order
       })
       const token = localStorage.getItem('token')
-      //serviceId
+      //Parameter serviceId
       const res = await axios.post(`${import.meta.env.VITE_APP_API}/api/order/6744a68d06c63ef5996a1900`, {
         details, coordinates , category, desiredTime, desiredDate  }, {headers: {
           authorization: token }
