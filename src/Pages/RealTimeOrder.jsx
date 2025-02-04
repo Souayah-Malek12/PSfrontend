@@ -6,8 +6,8 @@ const socket = io("http://localhost:5001");
 
 const RealTimeOrder = () => {
     const [orders, setOrders] = useState([]);
-    const [acquiredOrd, setAcquiredOrd] = useState(null);
-    const [bids, setBids] = useState({}); // To store bids for each order
+    const [acquiredOrds, setAcquiredOrd] = useState([]);
+    const [bidVal, setBidVal] = useState("")
 
     useEffect(() => {
         const worker = JSON.parse(localStorage.getItem("user"));
@@ -22,8 +22,6 @@ const RealTimeOrder = () => {
             try{
                 const token = localStorage.getItem('token');
                 const coordinates = JSON.parse(localStorage.getItem('user'))?.coordinates;
-                console.log("coordinates", coordinates)
-                console.log("token", token)
                 
                 const res = await axios.get(`${import.meta.env.VITE_APP_API}/api/order/NearbyOrds`,
                     { params: { coordinates: JSON.stringify(coordinates) },
@@ -33,50 +31,38 @@ const RealTimeOrder = () => {
                 )
                // setOrders(res?.data?.nearestOrders)
                 console.log("order",res?.data?.nearestOrders)
+                if(Array.isArray(res?.data?.nearestOrders)){
+                    setOrders([...res.data.nearestOrders]);
+                    console.log("backend fetched orders", orders)
 
-                console.log("backend fetched orders", orders)
+                } if (orders.length !== 0) {
+                    console.log("No error available");
+                }
+                
             }catch (err){
                 console.log(err.message)
             }
+
         }
         //only on mount
         useEffect(()=>{
             getOrders()
-        },[])
+        },[]) 
         //after orders will be listened by socket and save to back end
         // Listen for new orders
         socket.on("getOrder", (order) => {
-            console.log("Real-time order received:", order);
-            setOrders((prevOrders) => [...prevOrders, order]);
+            console.log("Real-time order received:", order.order);
+            setOrders((prevOrders) => [...prevOrders, order.order]);
+
         });
+        console.log("*****OrdersLIST *****:", orders);
 
-        // Listen for acquired orders
-        socket.on("acquiredorder", (minBid) => {
-            setAcquiredOrd(minBid);
-            console.log("Acquired order:", minBid);
-        });
-
-        // Cleanup when component unmounts
-      
-
-    // Handle bid input for each order
-    const handleInputChange = (ordId, value) => {
-        const newValue = parseFloat(value);
-        if (!isNaN(newValue)) {
-            setBids((prevBids) => ({
-                ...prevBids,
-                [ordId]: newValue,
-            }));
-        }
-    };
-
-    // Handle bid submission
+         // Handle bid submission
     const handleBid = (ord) => {
-        const bidPrice = bids[ord.id];
-        if (bidPrice && bidPrice >= ord.order.minVal && bidPrice <= ord.order.maxVal) {
+        if (bidVal && bidVal >= ord.minVal && bidVal <= ord.maxVal) {
             const OrdBid = {
                 order: ord,
-                price: bidPrice,
+                price: bidVal,
                 socketId: socket.id,
             };
             console.log("Submitting bid:", OrdBid);
@@ -85,43 +71,66 @@ const RealTimeOrder = () => {
             alert("Please enter a valid price within the range.");
         }
     };
+       
+        useEffect(() => {
+           
+        
+            socket.on("acquiredOrder", (minBid)=>{
+                console.log("Acquired Order",minBid)
+                setAcquiredOrd((prevOrds)=>[...prevOrds, minBid])
+                console.log("liste of acquired Orders", acquiredOrds)
+            });
+        
+            // Cleanup the listener when the component unmounts or re-renders
+            return () => {
+                socket.off("acquiredOrder");
+            };
+        }, []); 
 
+        // Cleanup when component unmounts
+      
+
+   
+
+   
+    
     return (
         <div>
             {/* NEW ORDERS SECTION */}
             <div>
                 <h1>NEW Orders</h1>
-                {orders.map((ord) => (
-                    <div key={ord.id || ord.order.id}>
-                        <h1>{ord.order.details}</h1>
-                        <h1>{ord.order.desiredTime}</h1>
-                        <h1>{ord.order.category}</h1>
-                        <h1>From: ${ord.order.minVal}</h1>
-                        <h1>To: ${ord.order.maxVal}</h1>
+                {orders.map((ord, index) => (
+                    <div key={index}>
+                        <h1>{ord.details}</h1>
+                        <h1>{ord.desiredTime}</h1>
+                        <h1>{ord.category}</h1>
+                       <h1>From: ${ord.minVal}</h1>
+                        <h1>To: ${ord.maxVal}</h1> 
 
                         <div>
                             <label>
-                                Enter your bid (between ${ord.order.minVal} and ${ord.order.maxVal}):
+                                Enter your bid (between ${ord.minVal} and ${ord.maxVal}):
                             </label>
                             <input
                                 type="number"
-                                min={ord.order.minVal}
-                                max={ord.order.maxVal}
-                                onChange={(e) => handleInputChange(ord.id, e.target.value)}
+                                min={ord.minVal}
+                                max={ord.maxVal}
+                                onChange={(e) => setBidVal(e.target.value)}
                                 placeholder="Enter a bid in the range"
                             />
                             <button
                                 onClick={() => handleBid(ord)}
-                                disabled={!bids[ord.id]}
+                                disabled={!bidVal}
                             >
                                 Bid a Price
                             </button>
-                        </div>
+                        </div> 
                     </div>
                 ))}
             </div>
 
-            {/* ACQUIRED ORDER SECTION */}
+            {/* ACQUIRED ORDER SECTION 
+          
             <div>
                 <h1>Acquired Order</h1>
                 {acquiredOrd ? (
@@ -138,7 +147,7 @@ const RealTimeOrder = () => {
                 ) : (
                     <p>No order acquired yet.</p>
                 )}
-            </div>
+            </div>   */}
         </div>
     );
 };

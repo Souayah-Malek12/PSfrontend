@@ -28,24 +28,26 @@ const PassOrderRealTime = () => {
               
     try{
       //socket sending 
-     
+     //Parameter serviceId
+     const token = localStorage.getItem('token')
 
+     const res = await axios.post(`${import.meta.env.VITE_APP_API}/api/order/6744a68d06c63ef5996a1900`, {
+      details, coordinates , category,minVal, maxVal, desiredTime, desiredDate  }, {headers: {
+        authorization: token }
+      }
+    )
+    if(res?.data){
+      console.log("order Passed Successfully", res?.data );
+      
+    }
+      const _id = res?.data?.order?._id
       //send order to backend return order ord.id send it to socket 
-      const order = {details, coordinates , category, minVal , maxVal , desiredTime, desiredDate};
+      const order = {_id, details, coordinates , category, minVal , maxVal , desiredTime, desiredDate};
       socket.emit("sendOrder", {
         order
       })
-      const token = localStorage.getItem('token')
-      //Parameter serviceId
-      const res = await axios.post(`${import.meta.env.VITE_APP_API}/api/order/6744a68d06c63ef5996a1900`, {
-        details, coordinates , category, desiredTime, desiredDate  }, {headers: {
-          authorization: token }
-        }
-      )
-      if(res?.data?.success){
-        console.log("order Passed Successfully", res?.data );
-        
-      }
+      console.log("sende front ",order)
+      
     }catch(err){
       console.log(err)
     }
