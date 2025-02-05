@@ -8,7 +8,7 @@ const RealTimeOrder = () => {
     const [orders, setOrders] = useState([]);
     const [acquiredOrds, setAcquiredOrd] = useState([]);
     const [bidVal, setBidVal] = useState("")
-
+    const [OrdId ,setOrdId] = useState("")
     useEffect(() => {
         const worker = JSON.parse(localStorage.getItem("user"));
 
@@ -71,25 +71,43 @@ const RealTimeOrder = () => {
             alert("Please enter a valid price within the range.");
         }
     };
-       
+       const acquireOrderCall =async(OrdId)=>{
+        try{
+             
+            const {data} = await axios.get(`${import.meta.env.VITE_APP_API}/api/worker/acquireOrd/${OrdId}`,
+                {
+                    headers: {
+                        authorization: localStorage.getItem('token') }
+                }  )
+                if(data?.success){
+                    console.log(data?.success)
+                }
+            }catch(error){
+            console.log("error in calling api acquireOrderCall", error);
+            
+        }
+       }
         useEffect(() => {
            
         
             socket.on("acquiredOrder", (minBid)=>{
-                console.log("Acquired Order",minBid)
+                console.log("Acquired Order",minBid) 
+                // acquireOrderController
+                setOrdId(minBid.order._Id)
+                console.log(OrdId)
+                acquireOrderCall(minBid.order._Id)
                 setAcquiredOrd((prevOrds)=>[...prevOrds, minBid])
                 console.log("liste of acquired Orders", acquiredOrds)
             });
-        
+            console.log("My orders", acquiredOrds)
+
             // Cleanup the listener when the component unmounts or re-renders
             return () => {
                 socket.off("acquiredOrder");
             };
         }, []); 
-
-        // Cleanup when component unmounts
-      
-
+        // Cleanup when component unmounts      
+         
    
 
    
