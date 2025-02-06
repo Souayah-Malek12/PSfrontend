@@ -8,7 +8,7 @@ const RealTimeOrder = () => {
     const [orders, setOrders] = useState([]);
     const [acquiredOrds, setAcquiredOrd] = useState([]);
     const [bidVal, setBidVal] = useState("")
-    const [OrdId ,setOrdId] = useState("")
+    const [ordId ,setOrdId] = useState("")
     useEffect(() => {
         const worker = JSON.parse(localStorage.getItem("user"));
 
@@ -33,16 +33,12 @@ const RealTimeOrder = () => {
                 console.log("order",res?.data?.nearestOrders)
                 if(Array.isArray(res?.data?.nearestOrders)){
                     setOrders([...res.data.nearestOrders]);
-                    console.log("backend fetched orders", orders)
-
                 } if (orders.length !== 0) {
                     console.log("No error available");
-                }
-                
+                }                
             }catch (err){
                 console.log(err.message)
             }
-
         }
         //only on mount
         useEffect(()=>{
@@ -50,11 +46,17 @@ const RealTimeOrder = () => {
         },[]) 
         //after orders will be listened by socket and save to back end
         // Listen for new orders
-        socket.on("getOrder", (order) => {
-            console.log("Real-time order received:", order.order);
-            setOrders((prevOrders) => [...prevOrders, order.order]);
-
-        });
+        useEffect(()=>{
+            socket.on("getOrder", (order) => {
+                console.log("Real-time order received:", order.order);
+                setOrders((prevOrders) => [...prevOrders, order.order]);
+    
+            });
+            return () => {
+                socket.off("getOrder");
+            };
+        },[])
+        
         console.log("*****OrdersLIST *****:", orders);
 
          // Handle bid submission
@@ -71,19 +73,23 @@ const RealTimeOrder = () => {
             alert("Please enter a valid price within the range.");
         }
     };
-       const acquireOrderCall =async(OrdId)=>{
+       const acquireOrderCall =async(ordId)=>{
         try{
-             
-            const {data} = await axios.get(`${import.meta.env.VITE_APP_API}/api/worker/acquireOrd/${OrdId}`,
-                {
-                    headers: {
-                        authorization: localStorage.getItem('token') }
-                }  )
+             const token = localStorage.getItem('token') 
+             console.log("tokn",token)
+            const {data} = await axios.put(`${import.meta.env.VITE_APP_API}/api/worker/acquireOrd/${ordId}`,
+                
+                    {},{headers: {
+                        authorization: token } }
+                  )
                 if(data?.success){
-                    console.log(data?.success)
+                    console.log(data?.message)
+                }else{
+                    console.log(data?.message)
+
                 }
             }catch(error){
-            console.log("error in calling api acquireOrderCall", error);
+            console.log("error in calling api acquireOrderCall", error.message);
             
         }
        }
@@ -93,14 +99,16 @@ const RealTimeOrder = () => {
             socket.on("acquiredOrder", (minBid)=>{
                 console.log("Acquired Order",minBid) 
                 // acquireOrderController
-                setOrdId(minBid.order._Id)
-                console.log(OrdId)
-                acquireOrderCall(minBid.order._Id)
+                setOrdId(minBid.order._id)
+                const ordId = minBid.order._id; // Ensure this is correctly spelled
+
+                console.log("iiiiid",minBid.order._id);                
+
+                acquireOrderCall(ordId);
                 setAcquiredOrd((prevOrds)=>[...prevOrds, minBid])
-                console.log("liste of acquired Orders", acquiredOrds)
             });
             console.log("My orders", acquiredOrds)
-
+                
             // Cleanup the listener when the component unmounts or re-renders
             return () => {
                 socket.off("acquiredOrder");
@@ -108,7 +116,7 @@ const RealTimeOrder = () => {
         }, []); 
         // Cleanup when component unmounts      
          
-   
+       
 
    
     
