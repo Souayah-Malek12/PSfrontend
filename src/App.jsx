@@ -9,6 +9,7 @@ import { Login } from "./Pages/Login"
 import AdminPage from './Pages/Admin/AdminPage';
 import RealTimeOrder from './Pages/RealTimeOrder';
 import PassOrderRealTime from './Pages/PassOrderRealTime';
+import ActuallOrder from './Pages/Worker/ActuallOrder';
 
 function App() {
 
@@ -31,6 +32,11 @@ function App() {
           <Route path='/PassrealTimeOrd' element={
           <ProtectedRoute >
             <PassOrderRealTime />
+          </ProtectedRoute>
+          } />
+           <Route path='/myOrds' element={
+          <ProtectedRoute >
+            <ActuallOrder />
           </ProtectedRoute>
           } />
 

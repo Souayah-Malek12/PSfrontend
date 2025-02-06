@@ -106,6 +106,9 @@ const RealTimeOrder = () => {
 
                 acquireOrderCall(ordId);
                 setAcquiredOrd((prevOrds)=>[...prevOrds, minBid])
+                socket.on("bidEnd", (data)=>{
+                    console.log("acquired With value of ",data)
+                })
             });
             console.log("My orders", acquiredOrds)
                 
