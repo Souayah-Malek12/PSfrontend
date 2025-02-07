@@ -10,6 +10,7 @@ import AdminPage from './Pages/Admin/AdminPage';
 import RealTimeOrder from './Pages/RealTimeOrder';
 import PassOrderRealTime from './Pages/PassOrderRealTime';
 import ActuallOrder from './Pages/Worker/ActuallOrder';
+import Orddetails from './Pages/Worker/Orddetails';
 
 function App() {
 
@@ -34,9 +35,16 @@ function App() {
             <PassOrderRealTime />
           </ProtectedRoute>
           } />
+
            <Route path='/myOrds' element={
           <ProtectedRoute >
             <ActuallOrder />
+          </ProtectedRoute>
+          } />
+
+          <Route path='/doneJob/:ordid' element={
+          <ProtectedRoute >
+            <Orddetails />
           </ProtectedRoute>
           } />
 
