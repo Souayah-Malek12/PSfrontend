@@ -7,11 +7,15 @@ import ProtectedRoute from './Context/ProtectedRoute';
 import './App.css'
 import { Login } from "./Pages/Login"
 import AdminPage from './Pages/Admin/AdminPage';
-import RealTimeOrder from './Pages/RealTimeOrder';
-import PassOrderRealTime from './Pages/PassOrderRealTime';
+import RealTimeOrder from './Pages/Worker/RealTimeOrder';
+import PassOrderRealTime from './Pages/Client/PassOrderRealTime';
 import ActuallOrder from './Pages/Worker/ActuallOrder';
 import Orddetails from './Pages/Worker/Orddetails';
-
+import Orders from './Pages/Common/Orders'
+import MyOrders from './Pages/Client/MyOrders';
+import UsersList from './Pages/Admin/UsersList';
+import ManageCategories from './Pages/Admin/ManageCategory';
+import ManageService from './Pages/Admin/ManageService';
 function App() {
 
   
@@ -57,6 +61,42 @@ function App() {
             </ProtectedRoute>
           } >
           </Route>
+          <Route path='/adminCat' element={
+            <ProtectedRoute >
+              <ManageCategories />
+            </ProtectedRoute>
+          } >
+          </Route>
+          <Route path='/adminServ' element={
+            <ProtectedRoute >
+              <ManageService />
+            </ProtectedRoute>
+          } >
+          </Route>
+
+          <Route path='/allUsers' element={
+            <ProtectedRoute >
+              <UsersList />
+            </ProtectedRoute>
+          } >
+          </Route>
+
+          
+
+          <Route path='/ords' element={
+            <ProtectedRoute >
+              <Orders /> 
+            </ProtectedRoute>
+          } >
+          </Route>
+
+          <Route path='/clientOrds' element={
+            <ProtectedRoute >
+              <MyOrders /> 
+            </ProtectedRoute>
+          } >
+          </Route>
+
 
       </Routes>
     </BrowserRouter>
