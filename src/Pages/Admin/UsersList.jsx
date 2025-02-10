@@ -1,10 +1,12 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import {useUserRole} from '../../Context/UserContext'
 
 const UsersList = () => {
   const [clients, setClients] = useState([]);
   const [searchedR, setSearchedR] = useState(''); // Role to filter clients
   const [message, setMessage] = useState('');
+  const { userRole } = useUserRole();
 
 
   const fetchClients = async () => {
@@ -53,6 +55,7 @@ const UsersList = () => {
     if (searchedR) {
       fetchClients();
     }
+  console.log("userRole", userRole)
   }, [searchedR, ]);
 
   return (
@@ -62,6 +65,7 @@ const UsersList = () => {
       <select onChange={(e) => setSearchedR(e.target.value)} value={searchedR}>
         <option value="">Select Role</option>
         <option value="Client">Client</option>
+        <option value="Worker">Worker</option>
         <option value="Service Client">Service Client</option>
       </select>
 
@@ -74,7 +78,9 @@ const UsersList = () => {
             <p>Email: {client.email}</p>
             <p>Phone: {client.phone}</p>
             <p>Role: {client.role}</p>
-            <button onClick={() => handleDeleteUser(client._id)}>Delete User</button>
+           { userRole !=="Adminstrator" &&
+            <button onClick={() => handleDeleteUser(client._id)}>Delete User</button> 
+           }
           </div>
         ))
       ) : (

@@ -1,107 +1,73 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import {BrowserRouter, Routes, Route} from "react-router-dom"
-import DashBoard from './modules/Dashboard/dashBoard'
-import ProtectedRoute from './Context/ProtectedRoute';
-
-import './App.css'
-import { Login } from "./Pages/Login"
-import AdminPage from './Pages/Admin/AdminPage';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DashBoard from './modules/Dashboard/dashBoard';
+import { Login } from "./Pages/Login";
 import RealTimeOrder from './Pages/Worker/RealTimeOrder';
 import PassOrderRealTime from './Pages/Client/PassOrderRealTime';
 import ActuallOrder from './Pages/Worker/ActuallOrder';
 import Orddetails from './Pages/Worker/Orddetails';
-import Orders from './Pages/Common/Orders'
+import Orders from './Pages/Common/Orders';
 import MyOrders from './Pages/Client/MyOrders';
 import UsersList from './Pages/Admin/UsersList';
 import ManageCategories from './Pages/Admin/ManageCategory';
 import ManageService from './Pages/Admin/ManageService';
+import AdminDashboard from './components/AdminDashboard';
+import ClientDashboard from './components/ClientDashboard';
+import WorkerDashboard from './components/WorkerDashboard';
+
+import { UserProvider } from './Context/UserContext';  // Import UserProvider
+import ProtectedRoute from './Routes/ProtectedRoute';  // Corrected ProtectedRoute import
+
 function App() {
-
-  
   return (
-    <>
-    <h1>React project</h1>
-    <BrowserRouter>
-      <Routes>
-        <Route path='/chatToService' element={
-          <ProtectedRoute >
-            <DashBoard />
-          </ProtectedRoute>
-          } />
-          <Route path='/realTimeOrd' element={
-          <ProtectedRoute >
-            <RealTimeOrder />
-          </ProtectedRoute>
-          } />
-          <Route path='/PassrealTimeOrd' element={
-          <ProtectedRoute >
-            <PassOrderRealTime />
-          </ProtectedRoute>
-          } />
+    <UserProvider>  {/* Wrap the entire app with UserProvider */}
+      <BrowserRouter>
+        <Routes>
+          {/* Public route */}
+          <Route path='/login' element={<Login />} />
 
-           <Route path='/myOrds' element={
-          <ProtectedRoute >
-            <ActuallOrder />
-          </ProtectedRoute>
-          } />
-
-          <Route path='/doneJob/:ordid' element={
-          <ProtectedRoute >
-            <Orddetails />
-          </ProtectedRoute>
-          } />
-
-        <Route path='/login' element={<Login />} />
-
-
-          <Route path='/admin' element={
-            <ProtectedRoute required='Administrator'>
-              <AdminPage />
-            </ProtectedRoute>
-          } >
-          </Route>
-          <Route path='/adminCat' element={
-            <ProtectedRoute >
-              <ManageCategories />
-            </ProtectedRoute>
-          } >
-          </Route>
-          <Route path='/adminServ' element={
-            <ProtectedRoute >
-              <ManageService />
-            </ProtectedRoute>
-          } >
+          {/* Protected Routes for Administrator */}
+          <Route element={<ProtectedRoute allowedRoles={["Administrator"]} />}>
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/adminServ" element={<ManageService />} />
+            <Route path="/adminCat" element={<ManageCategories />} />
+            <Route path="/ords" element={<Orders />} />
           </Route>
 
-          <Route path='/allUsers' element={
-            <ProtectedRoute >
-              <UsersList />
-            </ProtectedRoute>
-          } >
+          {/* Protected Routes for Service Client */}
+          <Route element={<ProtectedRoute allowedRoles={["Administrator","Service Client"]} />}>
+            <Route path="/allUsers" element={<UsersList />} />
           </Route>
 
+        
+
+          {/* Protected Routes for Client */}
+          <Route element={<ProtectedRoute allowedRoles={["Client"]} />}>
+            <Route path="/client-dashboard" element={<ClientDashboard />} />
+            <Route path="/clientOrds" element={<MyOrders />} />
+            <Route path="/PassrealTimeOrd" element={<PassOrderRealTime />} />
+          </Route>
+
+          {/* Protected Routes for Worker */}
+          <Route element={<ProtectedRoute allowedRoles={["Worker"]} />}>
+            <Route path="/worker-dashboard" element={<WorkerDashboard />} />
+            <Route path="/doneJob/:ordid" element={<Orddetails />} />
+            <Route path="/myOrds" element={<ActuallOrder />} />
+            <Route path="/realTimeOrd" element={<RealTimeOrder />} />
+          </Route>
+
+          {/* Protected Route for All Roles */}
+          <Route path='/chatToService' element={              
+            <ProtectedRoute allowedRoles={["Administrator", "Client", "Worker", "Service Client"]}>
+              <DashBoard />
+            </ProtectedRoute>
+            }
+          />
           
-
-          <Route path='/ords' element={
-            <ProtectedRoute >
-              <Orders /> 
-            </ProtectedRoute>
-          } >
-          </Route>
-
-          <Route path='/clientOrds' element={
-            <ProtectedRoute >
-              <MyOrders /> 
-            </ProtectedRoute>
-          } >
-          </Route>
-
-
-      </Routes>
-    </BrowserRouter>
-    </>
-  )
+        </Routes>
+      </BrowserRouter>
+    </UserProvider>
+  );
 }
 
-export default App
+export default App;

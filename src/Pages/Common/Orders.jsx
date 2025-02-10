@@ -48,6 +48,7 @@ const ServiceOrdersByStatus = () => {
             <h2>{order.name}</h2>
             <p>{order.details}</p>
             <p>Status: {order.status}</p>
+            <h2>{order.clientId}</h2>
             <p>Desired Date: {order.desiredDate}</p>
             <p>Desired Time: {order.desiredTime}</p>
           </div>
