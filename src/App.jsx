@@ -17,6 +17,9 @@ import WorkerDashboard from './components/WorkerDashboard';
 
 import { UserProvider } from './Context/UserContext';  // Import UserProvider
 import ProtectedRoute from './Routes/ProtectedRoute';  // Corrected ProtectedRoute import
+import Categories from './Pages/Common/Categories';
+import ServicesByCategory from './Pages/Common/Services';
+import Registre from './Pages/Registre';
 
 function App() {
   return (
@@ -25,6 +28,11 @@ function App() {
         <Routes>
           {/* Public route */}
           <Route path='/login' element={<Login />} />
+          <Route path='/registre' element={<Registre />} />
+
+          <Route path="/home" element={<Categories />} />
+            <Route path='/services/:catId'  element={<ServicesByCategory />}/>
+          
 
           {/* Protected Routes for Administrator */}
           <Route element={<ProtectedRoute allowedRoles={["Administrator"]} />}>
@@ -64,6 +72,7 @@ function App() {
             }
           />
           
+            
         </Routes>
       </BrowserRouter>
     </UserProvider>
