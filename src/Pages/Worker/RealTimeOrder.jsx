@@ -1,7 +1,32 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
+const MapComponent = ({ coordinates }) => {
+    // Default center (fallback if coordinates are not provided)
+    const defaultCenter = [51.505, -0.09];
+    return (
+      <MapContainer
+        center={coordinates || defaultCenter}
+        zoom={coordinates ? 13 : 2} // Zoom in if coordinates are provided
+        style={{ height: '400px', width: '100%' }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        {coordinates && (
+          <Marker position={coordinates}>
+            <Popup>Selected Position</Popup>
+          </Marker>
+        )}
+      </MapContainer>
+    );
+  };
+
+  
 const socket = io("http://localhost:5001");
 
 const RealTimeOrder = () => {
@@ -9,6 +34,8 @@ const RealTimeOrder = () => {
     const [acquiredOrds, setAcquiredOrd] = useState([]);
     const [bidVal, setBidVal] = useState("")
     const [ordId ,setOrdId] = useState("")
+    const [coordinates, setCoordinates] = useState(null)
+
     useEffect(() => {
         const worker = JSON.parse(localStorage.getItem("user"));
 
@@ -135,6 +162,12 @@ const RealTimeOrder = () => {
                         <h1>{ord.category}</h1>
                        <h1>From: ${ord.minVal}</h1>
                         <h1>To: ${ord.maxVal}</h1> 
+                        <h1>textttt**{ord?.coordinates?.coordinates}**</h1>
+                        {/*dispaly coordinates on map*/}
+                        <div>
+                        <MapComponent coordinates={coordinates} />
+
+                        </div>
 
                         <div>
                             <label>

@@ -52,7 +52,8 @@ const ServicesByCategory = () => {
 
       {services.length > 0 ? (
         services.map((service, index) => (
-          <div key={index} style={{ border: '1px solid #ccc', padding: '10px', margin: '10px' }}>
+          <div key={index} style={{ border: '1px solid #ccc', padding: '10px', margin: '10px' }}
+           onClick={()=>{navigate(`/PassrealTimeOrd/${catId}/${service._id}`)}}>
             <h2>{service.name}</h2>
           </div>
         ))

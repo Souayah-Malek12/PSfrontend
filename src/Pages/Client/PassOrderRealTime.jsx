@@ -1,6 +1,38 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
+import { useParams } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+
+
+
+const MapClickHandler = ({ onMapClick }) => {
+  useMapEvents({
+    click: (e) => {
+      onMapClick(e.latlng);
+    },
+  });
+  return null;
+};
+
+const MapComponent = ({ onPositionSelect, selectedPosition }) => {
+  return (
+    <MapContainer center={[34.739763, 10.759990]} zoom={15} style={{ height: '400px', width: '100%' }}>
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
+      {selectedPosition && (
+        <Marker position={selectedPosition}>
+          <Popup>Selected Position</Popup>
+        </Marker>
+      )}
+
+      <MapClickHandler onMapClick={onPositionSelect} />
+    </MapContainer>
+  );
+};
 
 const PassOrderRealTime = () => {
   const [order, setOrder] = useState("");
@@ -10,29 +42,39 @@ const PassOrderRealTime = () => {
   const [details, setDetails] = useState("");
   const [longitude, setLongitude] = useState("");
   const [latitude, setLatitude] = useState("");
-  const [category, setCategory] = useState("");
-  const [clientId, setClientId] = useState("");
+  const [category, setCategory] = useState(null);
   const [desiredTime, setDesiredTime] = useState("");
   const [desiredDate, setDesiredDate] = useState("");
   const [minVal, setMinVal] = useState("");
   const [maxVal, setMaxVal] = useState("")
+  const {sId} = useParams()
+  const {catId} = useParams()
+  const [selectedPosition, setSelectedPosition] = useState(null);
+
+
+  const handlePositionSelect = (latlng) => {
+    setLatitude(latlng.lat);
+    setLongitude(latlng.lng);
+    setSelectedPosition(latlng);
+
+  };
+  console.log("longitude", longitude)
+  console.log("latitude", latitude)
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-       
+      try{
+
         const coordinates = {
           type: "Point",
           coordinates: [parseFloat(longitude), parseFloat(latitude)], // Ensure longitude and latitude are numbers
         }
-       
-              
-    try{
       //socket sending 
      //Parameter serviceId
      const token = localStorage.getItem('token')
 
-     const res = await axios.post(`${import.meta.env.VITE_APP_API}/api/order/6744a68d06c63ef5996a1900`, {
-      details, coordinates , category,minVal, maxVal, desiredTime, desiredDate  }, {headers: {
+     const res = await axios.post(`${import.meta.env.VITE_APP_API}/api/order/${sId}`, {
+      details, coordinates , category: catId,minVal, maxVal, desiredTime, desiredDate  }, {headers: {
         authorization: token }
       }
     )
@@ -53,7 +95,7 @@ const PassOrderRealTime = () => {
     }
      
   }
-
+  
   useEffect(()=>{
     setSocket(io('http://localhost:5001'));
 },[])
@@ -88,43 +130,12 @@ const PassOrderRealTime = () => {
         <input type="number" value={maxVal} onChange={(e)=> setMaxVal(e.target.value)} />
       </div>
       <div>
-        <label>Longitude:</label>
-        <input
-          type="number"
-          step="any"
-          value={longitude}
-          onChange={(e) => setLongitude(e.target.value)}
-          required
-        />
+        {/* Map Part */ }
+
+        <MapComponent onPositionSelect={handlePositionSelect} selectedPosition={selectedPosition} />
+
       </div>
-      <div>
-        <label>Latitude:</label>
-        <input
-          type="number"
-          step="any"
-          value={latitude}
-          onChange={(e) => setLatitude(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Category:</label>
-        <input
-          type="text"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Client ID:</label>
-        <input
-          type="text"
-          value={clientId}
-          onChange={(e) => setClientId(e.target.value)}
-          required
-        />
-      </div>
+      
       <div>
         <label>Desired Time:</label>
         <input

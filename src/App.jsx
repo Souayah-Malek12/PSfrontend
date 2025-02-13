@@ -53,7 +53,7 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={["Client"]} />}>
             <Route path="/client-dashboard" element={<ClientDashboard />} />
             <Route path="/clientOrds" element={<MyOrders />} />
-            <Route path="/PassrealTimeOrd" element={<PassOrderRealTime />} />
+            <Route path="/PassrealTimeOrd/:catId/:sId" element={<PassOrderRealTime />} />
           </Route>
 
           {/* Protected Routes for Worker */}
