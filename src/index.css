@@ -2,3 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
+.content {
+    min-height: calc(100vh - 50px); /* Adjust based on Navbar/Footer height */
+    padding-bottom: 80px;
+  }
+  
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    margin : 0
+  }

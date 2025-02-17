@@ -47,8 +47,10 @@ const PassOrderRealTime = () => {
   const [desiredDate, setDesiredDate] = useState("");
   const [minVal, setMinVal] = useState("");
   const [maxVal, setMaxVal] = useState("")
-  const {sId} = useParams()
-  const {catId} = useParams()
+  const {  catId } = useParams();
+  const {  sId } = useParams();
+
+console.log(sId, "###", catId)
   const [selectedPosition, setSelectedPosition] = useState(null);
 
 
@@ -58,12 +60,12 @@ const PassOrderRealTime = () => {
     setSelectedPosition(latlng);
 
   };
-  console.log("longitude", longitude)
-  console.log("latitude", latitude)
-
+ 
   const handleSubmit = async(e) => {
+
     e.preventDefault();
       try{
+        console.log("###", catId)
 
         const coordinates = {
           type: "Point",
@@ -72,12 +74,14 @@ const PassOrderRealTime = () => {
       //socket sending 
      //Parameter serviceId
      const token = localStorage.getItem('token')
-
+        const category = catId;
      const res = await axios.post(`${import.meta.env.VITE_APP_API}/api/order/${sId}`, {
-      details, coordinates , category: catId,minVal, maxVal, desiredTime, desiredDate  }, {headers: {
+      name, details, coordinates , category,minVal, maxVal, desiredTime, desiredDate  }, {headers: {
         authorization: token }
       }
     )
+    console.log("category",category);
+    
     if(res?.data){
       console.log("order Passed Successfully", res?.data );
       

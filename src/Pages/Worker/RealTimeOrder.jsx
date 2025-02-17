@@ -3,14 +3,15 @@ import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useNavigate } from "react-router-dom"
 
 const MapComponent = ({ coordinates }) => {
     // Default center (fallback if coordinates are not provided)
-    const defaultCenter = [51.505, -0.09];
+    const defaultCenter = [10.505, 34.09];
     return (
       <MapContainer
         center={coordinates || defaultCenter}
-        zoom={coordinates ? 13 : 2} // Zoom in if coordinates are provided
+        zoom={coordinates ? 15 : 4} // Zoom in if coordinates are provided
         style={{ height: '400px', width: '100%' }}
       >
         <TileLayer
@@ -30,6 +31,8 @@ const MapComponent = ({ coordinates }) => {
 const socket = io("http://localhost:5001");
 
 const RealTimeOrder = () => {
+
+    const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [acquiredOrds, setAcquiredOrd] = useState([]);
     const [bidVal, setBidVal] = useState("")
@@ -136,6 +139,8 @@ const RealTimeOrder = () => {
                 socket.on("bidEnd", (data)=>{
                     console.log("acquired With value of ",data)
                 })
+                navigate('/myOrds');
+
             });
             console.log("My orders", acquiredOrds)
                 
@@ -165,7 +170,8 @@ const RealTimeOrder = () => {
                         <h1>textttt**{ord?.coordinates?.coordinates}**</h1>
                         {/*dispaly coordinates on map*/}
                         <div>
-                        <MapComponent coordinates={coordinates} />
+                            <h1>{ord?.coordinates.coordinates}</h1>
+                        <MapComponent coordinates={ord?.coordinates.coordinates} />
 
                         </div>
 

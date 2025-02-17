@@ -1,4 +1,6 @@
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashBoard from './modules/Dashboard/dashBoard';
 import { Login } from "./Pages/Login";
@@ -20,17 +22,25 @@ import ProtectedRoute from './Routes/ProtectedRoute';  // Corrected ProtectedRou
 import Categories from './Pages/Common/Categories';
 import ServicesByCategory from './Pages/Common/Services';
 import Registre from './Pages/Registre';
+import Footer from './components/Layouts/Footer';
+import Header from './components/Layouts/Header';
+import DoneOrders from './Pages/Worker/MyDoneOrders';
+
 
 function App() {
   return (
     <UserProvider>  {/* Wrap the entire app with UserProvider */}
       <BrowserRouter>
+      <Header />
+      <div className="content">
+
+
         <Routes>
           {/* Public route */}
           <Route path='/login' element={<Login />} />
           <Route path='/registre' element={<Registre />} />
 
-          <Route path="/home" element={<Categories />} />
+          <Route path="/" element={<Categories />} />
             <Route path='/services/:catId'  element={<ServicesByCategory />}/>
           
 
@@ -62,6 +72,8 @@ function App() {
             <Route path="/doneJob/:ordid" element={<Orddetails />} />
             <Route path="/myOrds" element={<ActuallOrder />} />
             <Route path="/realTimeOrd" element={<RealTimeOrder />} />
+            <Route path="/myDoneOrds" element={<DoneOrders />} />
+
           </Route>
 
           {/* Protected Route for All Roles */}
@@ -74,6 +86,9 @@ function App() {
           
             
         </Routes>
+        </div>
+        <Footer />
+
       </BrowserRouter>
     </UserProvider>
   );

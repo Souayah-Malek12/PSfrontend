@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {useUserRole} from '../../Context/UserContext'
+import Footer from '../../components/Layouts/Footer';
 
 const UsersList = () => {
   const [clients, setClients] = useState([]);
@@ -60,8 +61,10 @@ const UsersList = () => {
 
   return (
     <div>
-      <h1>Clients List</h1>
+     
       
+      <h1>Clients List</h1>
+
       <select onChange={(e) => setSearchedR(e.target.value)} value={searchedR}>
         <option value="">Select Role</option>
         <option value="Client">Client</option>
