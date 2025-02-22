@@ -1,223 +1,211 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import { useNavigate } from "react-router-dom"
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import { useNavigate } from "react-router-dom";
 
 const MapComponent = ({ coordinates }) => {
-    // Default center (fallback if coordinates are not provided)
-    const defaultCenter = [10.505, 34.09];
-    return (
-      <MapContainer
-        center={coordinates || defaultCenter}
-        zoom={coordinates ? 15 : 4} // Zoom in if coordinates are provided
-        style={{ height: '400px', width: '100%' }}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        {coordinates && (
-          <Marker position={coordinates}>
-            <Popup>Selected Position</Popup>
-          </Marker>
-        )}
-      </MapContainer>
-    );
-  };
+  const defaultCenter = [10.505, 34.09];
+  return (
+    <MapContainer
+      center={coordinates || defaultCenter}
+      zoom={coordinates ? 15 : 4}
+      style={{ height: "400px", width: "100%" }}
+      className="rounded-lg shadow-md"
+    >
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
+      {coordinates && (
+        <Marker position={coordinates}>
+          <Popup className="bg-white rounded-md shadow-md p-2">
+            Selected Position
+          </Popup>
+        </Marker>
+      )}
+    </MapContainer>
+  );
+};
 
-  
 const socket = io("http://localhost:5001");
 
 const RealTimeOrder = () => {
+  const navigate = useNavigate();
+  const [orders, setOrders] = useState([]);
+  const [acquiredOrds, setAcquiredOrd] = useState([]);
+  const [bidVal, setBidVal] = useState("");
+  const [ordId, setOrdId] = useState("");
+  const [coordinates, setCoordinates] = useState(null);
 
-    const navigate = useNavigate();
-    const [orders, setOrders] = useState([]);
-    const [acquiredOrds, setAcquiredOrd] = useState([]);
-    const [bidVal, setBidVal] = useState("")
-    const [ordId ,setOrdId] = useState("")
-    const [coordinates, setCoordinates] = useState(null)
+  useEffect(() => {
+    const worker = JSON.parse(localStorage.getItem("user"));
+    socket.emit("addWorkers", worker);
+  }, []);
 
-    useEffect(() => {
-        const worker = JSON.parse(localStorage.getItem("user"));
+  const getOrders = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const workerCoordinates = JSON.parse(localStorage.getItem("user"))?.coordinates;
 
-        // Join workers room
-        socket.emit("addWorkers", worker);
-        
-        
-    }, []);
-            //get orders of it's category//
-        const getOrders = async()=>{
-            try{
-                const token = localStorage.getItem('token');
-                const coordinates = JSON.parse(localStorage.getItem('user'))?.coordinates;
-                
-                const res = await axios.get(`${import.meta.env.VITE_APP_API}/api/order/NearbyOrds`,
-                    { params: { coordinates: JSON.stringify(coordinates) },
-                        headers: {
-                            authorization: token }
-                    } , 
-                )
-               // setOrders(res?.data?.nearestOrders)
-                console.log("order",res?.data?.nearestOrders)
-                if(Array.isArray(res?.data?.nearestOrders)){
-                    setOrders([...res.data.nearestOrders]);
-                } if (orders.length !== 0) {
-                    console.log("No error available");
-                }                
-            }catch (err){
-                console.log(err.message)
-            }
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_API}/api/order/NearbyOrds`,
+        {
+          params: { coordinates: JSON.stringify(workerCoordinates) },
+          headers: { authorization: token },
         }
-        //only on mount
-        useEffect(()=>{
-            getOrders()
-        },[]) 
-        //after orders will be listened by socket and save to back end
-        // Listen for new orders
-        useEffect(()=>{
-            socket.on("getOrder", (order) => {
-                console.log("Real-time order received:", order.order);
-                setOrders((prevOrders) => [...prevOrders, order.order]);
-    
-            });
-            return () => {
-                socket.off("getOrder");
-            };
-        },[])
-        
-        console.log("*****OrdersLIST *****:", orders);
+      );
 
-         // Handle bid submission
-    const handleBid = (ord) => {
-        if (bidVal && bidVal >= ord.minVal && bidVal <= ord.maxVal) {
-            const OrdBid = {
-                order: ord,
-                price: bidVal,
-                socketId: socket.id,
-            };
-            console.log("Submitting bid:", OrdBid);
-            socket.emit("bid", OrdBid); // Correctly emit the bid
-        } else {
-            alert("Please enter a valid price within the range.");
-        }
+      if (Array.isArray(res?.data?.nearestOrders)) {
+        setOrders([...res.data.nearestOrders]);
+      }
+      if (orders.length !== 0) {
+        console.log("No error available");
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  useEffect(() => {
+    getOrders();
+  }, []);
+
+  useEffect(() => {
+    socket.on("getOrder", (order) => {
+      console.log("Real-time order received:", order.order);
+      setOrders((prevOrders) => [...prevOrders, order.order]);
+    });
+
+    return () => {
+      socket.off("getOrder");
     };
-       const acquireOrderCall =async(ordId)=>{
-        try{
-             const token = localStorage.getItem('token') 
-             console.log("tokn",token)
-            const {data} = await axios.put(`${import.meta.env.VITE_APP_API}/api/worker/acquireOrd/${ordId}`,
-                
-                    {},{headers: {
-                        authorization: token } }
-                  )
-                if(data?.success){
-                    console.log(data?.message)
-                }else{
-                    console.log(data?.message)
+  }, []);
 
-                }
-            }catch(error){
-            console.log("error in calling api acquireOrderCall", error.message);
-            
-        }
-       }
-        useEffect(() => {
-           
-        
-            socket.on("acquiredOrder", (minBid)=>{
-                console.log("Acquired Order",minBid) 
-                // acquireOrderController
-                setOrdId(minBid.order._id)
-                const ordId = minBid.order._id; // Ensure this is correctly spelled
+  const handleBid = (ord) => {
+    if (bidVal && bidVal >= ord.minVal && bidVal <= ord.maxVal) {
+      const OrdBid = {
+        order: ord,
+        price: bidVal,
+        socketId: socket.id,
+      };
+      console.log("Submitting bid:", OrdBid);
+      socket.emit("bid", OrdBid);
+    } else {
+      alert("Please enter a valid price within the range.");
+    }
+  };
 
-                console.log("iiiiid",minBid.order._id);                
+  const acquireOrderCall = async (ordId) => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Token:", token);
 
-                acquireOrderCall(ordId);
-                setAcquiredOrd((prevOrds)=>[...prevOrds, minBid])
-                socket.on("bidEnd", (data)=>{
-                    console.log("acquired With value of ",data)
-                })
-                navigate('/myOrds');
+      const { data } = await axios.put(
+        `${import.meta.env.VITE_APP_API}/api/worker/acquireOrd/${ordId}`,
+        {},
+        { headers: { authorization: token } }
+      );
 
-            });
-            console.log("My orders", acquiredOrds)
-                
-            // Cleanup the listener when the component unmounts or re-renders
-            return () => {
-                socket.off("acquiredOrder");
-            };
-        }, []); 
-        // Cleanup when component unmounts      
-         
-       
+      if (data?.success) {
+        console.log(data?.message);
+      } else {
+        console.log(data?.message);
+      }
+    } catch (error) {
+      console.log("Error in calling API acquireOrderCall", error.message);
+    }
+  };
 
-   
-    
-    return (
-        <div>
-            {/* NEW ORDERS SECTION */}
-            <div>
-                <h1>NEW Orders</h1>
-                {orders.map((ord, index) => (
-                    <div key={index}>
-                        <h1>{ord.details}</h1>
-                        <h1>{ord.desiredTime}</h1>
-                        <h1>{ord.category}</h1>
-                       <h1>From: ${ord.minVal}</h1>
-                        <h1>To: ${ord.maxVal}</h1> 
-                        <h1>textttt**{ord?.coordinates?.coordinates}**</h1>
-                        {/*dispaly coordinates on map*/}
-                        <div>
-                            <h1>{ord?.coordinates.coordinates}</h1>
-                        <MapComponent coordinates={ord?.coordinates.coordinates} />
+  useEffect(() => {
+    socket.on("acquiredOrder", (minBid) => {
+      console.log("Acquired Order:", minBid);
+      setOrdId(minBid.order._id);
+      const ordId = minBid.order._id;
+      console.log("Order ID:", minBid.order._id);
+      acquireOrderCall(ordId);
+      setAcquiredOrd((prevOrds) => [...prevOrds, minBid]);
 
-                        </div>
+      socket.on("bidEnd", (data) => {
+        console.log("Acquired with value of:", data);
+      });
+    });
 
-                        <div>
-                            <label>
-                                Enter your bid (between ${ord.minVal} and ${ord.maxVal}):
-                            </label>
-                            <input
-                                type="number"
-                                min={ord.minVal}
-                                max={ord.maxVal}
-                                onChange={(e) => setBidVal(e.target.value)}
-                                placeholder="Enter a bid in the range"
-                            />
-                            <button
-                                onClick={() => handleBid(ord)}
-                                disabled={!bidVal}
-                            >
-                                Bid a Price
-                            </button>
-                        </div> 
-                    </div>
-                ))}
+    console.log("My Orders:", acquiredOrds);
+
+    return () => {
+      socket.off("acquiredOrder");
+    };
+  }, [acquiredOrds]);
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-8">
+      {/* NEW ORDERS SECTION */}
+      <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h1 className="text-2xl font-bold mb-4">NEW Orders</h1>
+
+        {orders.map((ord, index) => (
+          <div key={index} className="border-b last:border-b-0 pb-4">
+                        <h1 className="text-xl font-semibold mb-2">{ord.name}</h1>
+
+            <h1 className="text-xl font-semibold mb-2">{ord.details}</h1>
+            <p className="text-gray-700 mb-2">Desired Time: {ord.desiredTime}</p>
+            <p className="text-gray-700 mb-2">Category: {ord.category}</p>
+            <p className="text-gray-700 mb-2">Price Range: ${ord.minVal} - ${ord.maxVal}</p>
+
+            {/* Display Coordinates on Map */}
+            <div className="mb-4">
+              <h3 className="text-lg font-medium mb-2">Location:</h3>
+              <MapComponent coordinates={ord?.coordinates?.coordinates} />
             </div>
 
-            {/* ACQUIRED ORDER SECTION 
-          
-            <div>
-                <h1>Acquired Order</h1>
-                {acquiredOrd ? (
-                    <div>
-                        <h1>{acquiredOrd.order?.details}</h1>
-                        <h1>{acquiredOrd.order?.coordinates}</h1>
-                        <h1>{acquiredOrd.order?.category}</h1>
-                        <h1>{acquiredOrd.order?.minVal}</h1>
-                        <h1>{acquiredOrd.order?.maxVal}</h1>
-                        <h1>{acquiredOrd.order?.desiredTime}</h1>
-                        <h1>{acquiredOrd.order?.desiredDate}</h1>
-                        <p>With Price: ${acquiredOrd.price}</p>
-                    </div>
-                ) : (
-                    <p>No order acquired yet.</p>
-                )}
-            </div>   */}
-        </div>
-    );
+            {/* Bid Input */}
+            <div className="flex items-center space-x-2">
+              <input
+                type="number"
+                min={ord.minVal}
+                max={ord.maxVal}
+                onChange={(e) => setBidVal(e.target.value)}
+                placeholder={`Enter bid (${ord.minVal}-${ord.maxVal})`}
+                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                onClick={() => handleBid(ord)}
+                disabled={!bidVal}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
+              >
+                Bid a Price
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ACQUIRED ORDER SECTION */}
+      {/* Uncomment and style as needed */}
+      {/* 
+      <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg">
+        <h1 className="text-2xl font-bold mb-4">Acquired Order</h1>
+        {acquiredOrds.length > 0 ? (
+          acquiredOrds.map((ord, index) => (
+            <div key={index} className="border-b last:border-b-0 pb-4">
+              <h1 className="text-xl font-semibold mb-2">{ord.order?.details}</h1>
+              <p className="text-gray-700 mb-2">Category: {ord.order?.category}</p>
+              <p className="text-gray-700 mb-2">Min Value: ${ord.order?.minVal}</p>
+              <p className="text-gray-700 mb-2">Max Value: ${ord.order?.maxVal}</p>
+              <p className="text-gray-700 mb-2">Desired Time: {ord.order?.desiredTime}</p>
+              <p className="text-gray-700 mb-2">Desired Date: {ord.order?.desiredDate}</p>
+              <p className="text-green-600 font-medium">With Price: ${ord.price}</p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-600 text-center">No orders acquired yet.</p>
+        )}
+      </div>
+      */}
+    </div>
+  );
 };
 
 export default RealTimeOrder;
