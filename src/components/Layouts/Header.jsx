@@ -1,6 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useUserRole } from '../../Context/UserContext';
+
+
+
 
 const Header = () => {
+
+  const { userRole } = useUserRole();
+
+console.log("user", userRole)
   return (
     <header className="mb-2 px-4 shadow w-full">
       <div className="relative mx-auto flex max-w-screen-lg flex-col py-4   sm:flex-row sm:items-center sm:justify-between">
@@ -21,7 +29,7 @@ const Header = () => {
               />
             </svg>
           </span>
-          <span>future</span>
+          <span>24/7 Services</span>
         </a>
         <input className="peer hidden" type="checkbox" id="navbar-open" />
         <label
@@ -48,28 +56,29 @@ const Header = () => {
         >
           <ul className="flex flex-col gap-y-4 sm:flex-row sm:gap-x-8">
             <li>
-              <a className="text-gray-600 hover:text-blue-600" href="#">
-                Pricing
+              <a className="text-gray-600 hover:text-blue-600" href="/">
+                Categories
               </a>
             </li>
             <li>
               <a className="text-gray-600 hover:text-blue-600" href="#">
-                Demo
+                About
               </a>
             </li>
-            <li>
-              <a className="text-gray-600 hover:text-blue-600" href="#">
-                Support
-              </a>
-            </li>
+
+          { userRole===""? (
             <li className="mt-2 sm:mt-0">
               <a
                 className="rounded-xl border-2 border-blue-600 px-6 py-2 font-medium text-blue-600 hover:bg-blue-600 hover:text-white"
-                href="#"
+                href="/login"
               >
                 Login
               </a>
-            </li>
+              
+            </li> ) : (
+             ""
+            )
+          }
           </ul>
         </nav>
       </div>

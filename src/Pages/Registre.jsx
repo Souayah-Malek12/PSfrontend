@@ -230,7 +230,7 @@ const Registre = () => {
                     />
                   </div>
                 </div>
-                <div className="mb-4 lg:ml-5 md:ml-[90px]">
+                <div className="mb-4 lg:ml-2 md:ml-[90px]">
                   <label
                     className="block mb-2 text-sm font-bold text-gray-700 dark:text-white"
                     htmlFor="phone"
@@ -245,40 +245,6 @@ const Registre = () => {
                     type="number"
                     name="phone"
                     placeholder="Enter your phone number"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block mb-2 text-sm font-bold text-gray-700 dark:text-white"
-                    htmlFor="longitude"
-                  >
-                    Longitude
-                  </label>
-                  <input
-                    type="number"
-                    name="longitude"
-                    placeholder="Longitude"
-                    value={formData.longitude}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-white border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block mb-2 text-sm font-bold text-gray-700 dark:text-white"
-                    htmlFor="longitude"
-                  >
-                    lattitude
-                  </label>
-                  <input
-                    type="number"
-                    name="latitude"
-                    placeholder="latitude"
-                    value={formData.latitude}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-white border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                   />
                 </div>
                 <div className="mb-4">
@@ -328,7 +294,7 @@ const Registre = () => {
                   </div>
                 )}
                 <MapComponent  onPositionSelect={handlePositionSelect} selectedPosition={selectedPosition}/>
-                <div className="mb-6 text-center">
+                <div className="mb-6 text-center mt-5">
                   <button
                     className="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-700 dark:bg-blue-700 dark:text-white dark:hover:bg-blue-900 focus:outline-none focus:shadow-outline"
                     type="submit"

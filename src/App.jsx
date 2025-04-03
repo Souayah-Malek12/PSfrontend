@@ -25,6 +25,7 @@ import Registre from './Pages/Registre';
 import Footer from './components/Layouts/Footer';
 import Header from './components/Layouts/Header';
 import DoneOrders from './Pages/Worker/MyDoneOrders';
+import RoleBasedLayout from './components/Layouts/RoleBasedLayout';
 
 
 function App() {
@@ -40,17 +41,20 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/registre' element={<Registre />} />
 
+
+          <Route element={<RoleBasedLayout />}>
+
           <Route path="/" element={<Categories />} />
             <Route path='/services/:catId'  element={<ServicesByCategory />}/>
           
 
           {/* Protected Routes for Administrator */}
-          <Route element={<ProtectedRoute allowedRoles={["Administrator"]} />}>
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/adminServ" element={<ManageService />} />
-            <Route path="/adminCat" element={<ManageCategories />} />
-            <Route path="/ords" element={<Orders />} />
-          </Route>
+            <Route element={<ProtectedRoute allowedRoles={["Administrator"]} />}>
+                <Route path='/admin' element={<AdminDashboard />} />
+                <Route path="/adminServ" element={<ManageService />} />
+                <Route path="/adminCat" element={<ManageCategories />} />
+                <Route path="/ords" element={<Orders />} />
+              </Route>
 
           {/* Protected Routes for Service Client */}
           <Route element={<ProtectedRoute allowedRoles={["Administrator","Service Client"]} />}>
@@ -61,6 +65,7 @@ function App() {
 
           {/* Protected Routes for Client */}
           <Route element={<ProtectedRoute allowedRoles={["Client"]} />}>
+
             <Route path="/client-dashboard" element={<ClientDashboard />} />
             <Route path="/clientOrds" element={<MyOrders />} />
             <Route path="/PassrealTimeOrd/:catId/:sId" element={<PassOrderRealTime />} />
@@ -85,6 +90,8 @@ function App() {
           />
           
             
+
+            </Route>
         </Routes>
         </div>
         <Footer />
