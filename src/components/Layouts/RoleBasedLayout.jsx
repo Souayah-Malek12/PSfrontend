@@ -1,4 +1,5 @@
 // src/components/RoleBasedLayout.js
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useUserRole}   from '../../Context/UserContext';  // Assuming you store the user's role in context
@@ -22,7 +23,8 @@ const RoleBasedLayout = () => {
   else if (userRole === 'ServiceClient') {
     Sidebar = ServiceClientDashboard;
   } else {
-    Sidebar = () => <div>No Sidebar</div>;  // Fallback if no role is set
+    // eslint-disable-next-line react/display-name
+    Sidebar = () => <div></div>;  // Fallback if no role is set
   }
   
   return (

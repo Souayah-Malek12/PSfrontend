@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+/* eslint-disable no-unused-vars */
+import React, {  useEffect } from 'react'
 import { useUserRole } from '../../Context/UserContext';
 
 
@@ -6,13 +7,27 @@ import { useUserRole } from '../../Context/UserContext';
 
 const Header = () => {
 
-  const { userRole } = useUserRole();
+  const { userRole, setUserRole } = useUserRole();
+  useEffect(() => {
+    console.log("userRole from Header:", userRole); // Just to debug
+  }, [userRole]);
+
+const handleLogout =()=>{
+  try{
+    setUserRole(null);
+    localStorage.removeItem('user')
+    localStorage.removeItem('token')
+
+  }catch(err){
+    console.log("error logout", err)
+  }
+}
 
 console.log("user", userRole)
   return (
-    <header className="mb-2 px-4 shadow w-full">
+    <header className="mb-2 px-4 shadow w-full text-xl font-black text-gray-900 dark:text-white">
       <div className="relative mx-auto flex max-w-screen-lg flex-col py-4   sm:flex-row sm:items-center sm:justify-between">
-        <a className="flex items-center text-2xl font-black" href="/">
+        <a className="flex items-center text-2xl font-black text-decoration-none" href="/">
           <span className="mr-2 text-3xl text-blue-600">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -54,29 +69,33 @@ console.log("user", userRole)
           aria-label="Header Navigation"
           className="peer-checked:block hidden pl-2 py-6 sm:block sm:py-0"
         >
-          <ul className="flex flex-col gap-y-4 sm:flex-row sm:gap-x-8">
+          <ul className="flex flex-col gap-y-4 sm:flex-row sm:gap-x-8 ">
             <li>
-              <a className="text-gray-600 hover:text-blue-600" href="/">
+              <a className="text-gray-600 hover:text-blue-600 text-decoration-none" href="/">
                 Categories
               </a>
             </li>
             <li>
-              <a className="text-gray-600 hover:text-blue-600" href="#">
+              <a className="text-gray-600 hover:text-blue-600 text-decoration-none" href="/about">
                 About
               </a>
             </li>
 
-          { userRole===""? (
+          { userRole===null? (
             <li className="mt-2 sm:mt-0">
               <a
-                className="rounded-xl border-2 border-blue-600 px-6 py-2 font-medium text-blue-600 hover:bg-blue-600 hover:text-white"
+                className=" text-decoration-none rounded-xl border-2 border-blue-600 px-6 py-2 font-medium text-blue-600 hover:bg-blue-600 hover:text-white"
                 href="/login"
               >
                 Login
               </a>
               
             </li> ) : (
-             ""
+             <li>
+<button onClick={()=>{handleLogout()}} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
+  Logout
+</button>
+             </li>
             )
           }
           </ul>

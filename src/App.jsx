@@ -13,7 +13,6 @@ import MyOrders from './Pages/Client/MyOrders';
 import UsersList from './Pages/Admin/UsersList';
 import ManageCategories from './Pages/Admin/ManageCategory';
 import ManageService from './Pages/Admin/ManageService';
-import AdminDashboard from './components/AdminDashboard';
 import ClientDashboard from './components/ClientDashboard';
 import WorkerDashboard from './components/WorkerDashboard';
 
@@ -26,11 +25,16 @@ import Footer from './components/Layouts/Footer';
 import Header from './components/Layouts/Header';
 import DoneOrders from './Pages/Worker/MyDoneOrders';
 import RoleBasedLayout from './components/Layouts/RoleBasedLayout';
+import { Toaster } from 'react-hot-toast';
+import UnAuthorized from './Pages/unAuthorized';
 
 
 function App() {
   return (
+
     <UserProvider>  {/* Wrap the entire app with UserProvider */}
+          <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+
       <BrowserRouter>
       <Header />
       <div className="content">
@@ -40,6 +44,8 @@ function App() {
           {/* Public route */}
           <Route path='/login' element={<Login />} />
           <Route path='/registre' element={<Registre />} />
+          <Route path='/*' element={<UnAuthorized />} />
+
 
 
           <Route element={<RoleBasedLayout />}>
@@ -50,7 +56,6 @@ function App() {
 
           {/* Protected Routes for Administrator */}
             <Route element={<ProtectedRoute allowedRoles={["Administrator"]} />}>
-                <Route path='/admin' element={<AdminDashboard />} />
                 <Route path="/adminServ" element={<ManageService />} />
                 <Route path="/adminCat" element={<ManageCategories />} />
                 <Route path="/ords" element={<Orders />} />
@@ -73,7 +78,6 @@ function App() {
 
           {/* Protected Routes for Worker */}
           <Route element={<ProtectedRoute allowedRoles={["Worker"]} />}>
-            <Route path="/worker-dashboard" element={<WorkerDashboard />} />
             <Route path="/doneJob/:ordid" element={<Orddetails />} />
             <Route path="/myOrds" element={<ActuallOrder />} />
             <Route path="/realTimeOrd" element={<RealTimeOrder />} />

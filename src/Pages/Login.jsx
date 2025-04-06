@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import axios from 'axios';
 import toast from "react-hot-toast";
 import { useNavigate } from 'react-router-dom';
+import { useUserRole } from "../Context/UserContext";
 
 export const Login = () => {
+    const {setUserRole} = useUserRole();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [role, setRole] = useState("Client"); // Set default role
     const navigate = useNavigate();
-
+   
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
@@ -18,13 +20,13 @@ export const Login = () => {
             const data = response.data;
             if (data?.success) {
 
-                toast.success('Login successfully');
                 localStorage.setItem('token', data?.token);
                 localStorage.setItem('role', data?.role);
                 localStorage.setItem('user', JSON.stringify(data));
                 toast.success(data.message, {
                     duration: 2000, // Toast duration
                 });
+                setUserRole(data?.role)
                 navigate('/');
             } else {
                 toast.error("Error while login");
@@ -41,10 +43,7 @@ export const Login = () => {
                 <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
                     <div className="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
                         <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
-                            <div>
-                                <img src="https://storage.googleapis.com/devitary-image-host.appspot.com/15846435184459982716-LogoMakr_7POjrN.png"
-                                    className="w-32 mx-auto" alt="Logo" />
-                            </div>
+                            
                             <div className="mt-12 flex flex-col items-center">
                                 <h1 className="text-2xl xl:text-3xl font-extrabold">
                                     Don't you have an account ? 

@@ -3,15 +3,24 @@
 @tailwind utilities;
 
 
-
+body {
+  margin : 0;
+  padding :0;
+  background-image: url('./assets/img1.jpg');
+  background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
 .content {
     min-height: calc(100vh - 50px); /* Adjust based on Navbar/Footer height */
-    padding-bottom: 80px;
+    max-width: max-width;
+   margin: 0 auto; /* Centers it */
+
   }
   
 footer {
     position: relative;
     bottom: 0;
     width: 100%;
-    margin : 0
+    margin : 0;
   }

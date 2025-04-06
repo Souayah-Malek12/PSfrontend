@@ -1,8 +1,6 @@
-/* eslint-disable no-unused-vars */
-import React from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
-import {io} from 'socket.io-client'
+import { io } from "socket.io-client";
 
 export const DashBoard = () => {
   const [user, setUser] = useState("");
@@ -17,8 +15,6 @@ export const DashBoard = () => {
   const [rId, setRId] = useState("");
   const [convUserN, setConvUserN] = useState("");
   const messageRef = useRef();
-  
-
 
   const fetchUsers = async () => {
     try {
@@ -30,9 +26,7 @@ export const DashBoard = () => {
           },
         }
       );
-      if (data?.success) {
-        setUsers(data?.users);
-      }
+      if (data?.success) setUsers(data?.users);
     } catch (error) {
       console.log("Error while fetching conversations", error);
     }
@@ -42,18 +36,14 @@ export const DashBoard = () => {
     try {
       const userId = user.id;
       const { data } = await axios.get(
-        `${
-          import.meta.env.VITE_APP_API
-        }/api/conversation/conversations/${userId}`,
+        `${import.meta.env.VITE_APP_API}/api/conversation/conversations/${userId}`,
         {
           headers: {
             Authorization: localStorage.getItem("token"),
           },
         }
       );
-      if (data?.success) {
-        setConversations(data?.conversationsResult);
-      }
+      if (data?.success) setConversations(data?.conversationsResult);
     } catch (error) {
       console.log("Error while fetching conversations", error);
     }
@@ -62,38 +52,26 @@ export const DashBoard = () => {
   const newConversations = async () => {
     try {
       const senderId = user.id;
-      console.log(typeof receiverId);
       const { data } = await axios.post(
         `${import.meta.env.VITE_APP_API}/api/conversation/Client-Service`,
-        {
-          senderId,
-          receiverId,
-        },
+        { senderId, receiverId },
         {
           headers: {
             Authorization: localStorage.getItem("token"),
           },
         }
       );
-      if (data?.success) {
-        setNewCId(data.newConversation._id);
-        console.log("New conv Id", data.newConversation._id);
-      }
-      console.log({
-        senderId,
-        receiverId,
-      });
+      if (data?.success) setNewCId(data.newConversation._id);
     } catch (error) {
-      console.log("Error while fetching conversations", error);
+      console.log("Error while creating conversation", error);
     }
   };
+
   const fetchMessages = async () => {
     try {
       if (!conversationId) return;
       const { data } = await axios.get(
-        `${
-          import.meta.env.VITE_APP_API
-        }/api/conversation/messages/${conversationId}`,
+        `${import.meta.env.VITE_APP_API}/api/conversation/messages/${conversationId}`,
         {
           headers: {
             Authorization: localStorage.getItem("token"),
@@ -102,8 +80,7 @@ export const DashBoard = () => {
       );
       if (data.success) {
         setMesssages(data.messageUserData);
-        setConvUserN(messages[0]?.user?.name)
-       
+        setConvUserN(data.messageUserData[0]?.user?.name || "");
       }
     } catch (err) {
       console.log("error while fetching message", err);
@@ -112,23 +89,13 @@ export const DashBoard = () => {
 
   const sendMessage = async () => {
     try {
-
-      
-      const senderId = user.id;     
-      try{
-      
-      console.log("emmitiing message",  {
-        conversationId, senderId , message , rId 
-      })
-      socket.emit('sendMessage', {
+      const senderId = user.id;
+      socket.emit("sendMessage", {
         conversationId,
         senderId,
         message,
-        rId
+        rId,
       });
-    }catch(err){
-      console.log("error while sending message");
-    }
 
       const { data } = await axios.post(
         `${import.meta.env.VITE_APP_API}/api/conversation/sendMessage/`,
@@ -139,43 +106,39 @@ export const DashBoard = () => {
           },
         }
       );
-      console.log("message sent")
+
       if (data.success) {
-        setMesssages((prevMessages) => [...prevMessages, {user, message}]);
-        setMessage(" ");
+        setMesssages((prevMessages) => [...prevMessages, { user, message }]);
+        setMessage("");
       }
     } catch (err) {
       console.log("error", err);
     }
   };
 
+  // Socket.IO
+  useEffect(() => {
+    setSocket(io("http://localhost:5001"));
+  }, []);
 
-  //socket part
-  useEffect(()=>{
-    setSocket(io('http://localhost:5001'));
-},[])
+  useEffect(() => {
+    socket?.emit("addUser", user.id);
+    socket?.on("getUsers", (users) => {
+      console.log("Active users", users);
+    });
+    socket?.on("getMessage", (data) => {
+      const { conversationId, senderId, message } = data;
+      setMesssages((prevMessages) => [
+        ...prevMessages,
+        { conversationId, senderId, message },
+      ]);
+    });
 
-useEffect(()=>{
-    socket?.emit('addUser', user.id)
-    socket?.on('getUsers', users=>{
-        console.log("Active users", users)
-    })
-    socket?.on('getMessage', data => {
-        const {conversationId, senderId ,message} = data;
-        console.log("New message received via socket:", data.message);
-
-        setMesssages(prevMessages => [
-          ...prevMessages,
-          { conversationId, senderId, message }
-        ]);                        
-    })
     return () => {
-      socket?.off('getUsers');
-      socket?.off('getMessage');
+      socket?.off("getUsers");
+      socket?.off("getMessage");
     };
-},[socket])
- 
-  //end of socket 
+  }, [socket]);
 
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
@@ -183,13 +146,11 @@ useEffect(()=>{
   }, []);
 
   useEffect(() => {
-    fetchConversations();
+    if (user) fetchConversations();
   }, [user, newCId]);
 
   useEffect(() => {
-    if (newCId != null) {
-      newConversations();
-    }
+    if (receiverId) newConversations();
   }, [receiverId]);
 
   useEffect(() => {
@@ -197,69 +158,89 @@ useEffect(()=>{
   }, [conversationId]);
 
   return (
-    <div>
-      <h1>*DashBoard :{user.name}*</h1>
-      <div className="flex">
-        <div>
-          <h1>#####Liste of Conversations####</h1>
-          <div>
-            {conversations?.map((c) => (
-              <div key={c.conversationId}>
-                <h1>{c?.user?.email}</h1>
-                <h1 onClick={() => { setConvId(c.conversationId); setRId(c.user._id);} }>
-                  {c?.user?.name}
-                </h1>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div>
-          <div>
-            <h1>#######Discussion####</h1>
-            <div>
-              
-              <h1>From: {convUserN}</h1>
-              {messages.length > 0 ? (
-                messages?.map((m, i) => (
-                  <div key={i}>
-                    <h2>From : {m.user?.name}</h2>
-                    <h2>{m.message}</h2>
-                    <div ref={messageRef}></div>
-                  </div>
-                ))
-              ) : (
-                <h1>No messages</h1>
-              )}
-            </div>
-          </div>
-          <div>
-            <input
-              type="text"
-              placeholder="type message"
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <span>
-              <button className="bg-blue-500" onClick={() => sendMessage()}>
-                Send Message
-              </button>
-            </span>
-          </div>
-        </div>
-        <div>
-          <h1>#####Talk To Users######</h1>
-          <div>
-            {users?.map((u, i) => (
-              <div key={i} onClick={() =>{ setReceiverId(u._id);  
-              }} >
-                <h1>{u.name}</h1>
-                <h1>{u.email}</h1>
-                <br />
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="flex h-screen bg-gradient-to-r from-blue-50 via-purple-50 to-indigo-50 text-sm">
+  {/* Left Sidebar - Conversations */}
+  <div className="w-[300px] bg-white border-r border-gray-200 p-4 overflow-y-auto shadow-md">
+    <h2 className="text-xl font-bold text-blue-600 mb-4">Conversations</h2>
+    {conversations.map((c) => (
+      <div
+        key={c.conversationId}
+        onClick={() => {
+          setConvId(c.conversationId);
+          setRId(c.user._id);
+        }}
+        className="p-3 mb-2 rounded-lg hover:bg-blue-100 bg-white cursor-pointer transition-all shadow-sm"
+      >
+        <p className="font-semibold text-gray-800">{c?.user?.name}</p>
+        <p className="text-xs text-gray-500">{c?.user?.email}</p>
       </div>
+    ))}
+  </div>
+
+  {/* Main Chat Window */}
+  <div className="flex flex-col flex-1 bg-white shadow-inner">
+    {/* Header */}
+    <div className="p-4 border-b bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-semibold text-lg shadow-sm">
+      Chat with: {convUserN || "Select a conversation"}
     </div>
+
+    {/* Messages */}
+    <div className="flex-1 p-6 overflow-y-auto space-y-4 bg-gradient-to-b from-white to-blue-50">
+      {messages.length > 0 ? (
+        messages.map((m, i) => (
+          <div
+            key={i}
+            className={`max-w-[70%] px-4 py-3 rounded-2xl shadow ${
+              m.user?.id === user.id
+                ? "bg-blue-500 text-white ml-auto"
+                : "bg-green-100 text-gray-800 mr-auto"
+            }`}
+          >
+            <p className="text-xs font-bold mb-1">{m.user?.name}</p>
+            <p className="text-sm">{m.message}</p>
+          </div>
+        ))
+      ) : (
+        <p className="text-center text-gray-500 mt-20">
+          No messages yet. Start a conversation!
+        </p>
+      )}
+    </div>
+
+    {/* Input */}
+    <div className="p-4 border-t bg-white flex items-center gap-3 shadow-md">
+      <input
+        type="text"
+        className="flex-1 p-3 rounded-full border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+        placeholder="Type your message..."
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
+      <button
+        onClick={sendMessage}
+        className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-5 py-2 rounded-full hover:opacity-90 transition"
+      >
+        Send
+      </button>
+    </div>
+  </div>
+
+  {/* Right Sidebar - Users */}
+  <div className="w-[300px] bg-white border-l border-gray-200 p-4 overflow-y-auto shadow-md">
+    <h2 className="text-xl font-bold text-green-600 mb-4">Start New Chat</h2>
+    {users.map((u, i) => (
+      <div
+        key={i}
+        onClick={() => setReceiverId(u._id)}
+        className="p-3 mb-2 rounded-lg hover:bg-green-100 bg-white cursor-pointer transition-all shadow-sm"
+      >
+        <p className="font-semibold text-gray-800">{u.name}</p>
+        <p className="text-xs text-gray-500">{u.email}</p>
+      </div>
+    ))}
+  </div>
+</div>
+
   );
 };
 
