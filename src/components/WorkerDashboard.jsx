@@ -65,6 +65,15 @@ const WorkerDashboard = () => {
                     </a>
                   </li>
 
+                  <li className="rounded-sm">
+                    <a href="/availableOrder" className="flex items-center p-2 space-x-3 rounded-md">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="w-5 h-5 fill-current dark:text-gray-600">
+                        <path d="M203.247,386.414,208,381.185V355.4L130.125,191H93.875L16,355.4v27.042l4.234,4.595a124.347,124.347,0,0,0,91.224,39.982h.42A124.343,124.343,0,0,0,203.247,386.414ZM176,368.608a90.924,90.924,0,0,1-64.231,26.413h-.33A90.907,90.907,0,0,1,48,369.667V362.6l64-135.112L176,362.6Z"></path>
+                      </svg>
+                      <span>Availble Order</span>
+                    </a>
+                  </li>
+
                   
                 </ul>
               </div>
