@@ -1,7 +1,7 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, HashRouter } from "react-router-dom";
 import DashBoard from './modules/Dashboard/dashBoard';
 import { Login } from "./Pages/Login";
 import RealTimeOrder from './Pages/Worker/RealTimeOrder';
