@@ -27,7 +27,7 @@ import DoneOrders from './Pages/Worker/MyDoneOrders';
 import RoleBasedLayout from './components/Layouts/RoleBasedLayout';
 import { Toaster } from 'react-hot-toast';
 import UnAuthorized from './Pages/unAuthorized';
-import availableOrder from './Pages/Worker/availableOrder';
+import AvailableOrder from './Pages/Worker/AvailableOrder';
 
 function App() {
   return (
@@ -78,12 +78,12 @@ function App() {
 
           {/* Protected Routes for Worker */}
           <Route element={<ProtectedRoute allowedRoles={["Worker"]} />}>
-          <Route path="/availableOrder" element={<availableOrder />} />
 
             <Route path="/doneJob/:ordid" element={<Orddetails />} />
             <Route path="/myOrds" element={<ActuallOrder />} />
             <Route path="/realTimeOrd" element={<RealTimeOrder />} />
             <Route path="/myDoneOrds" element={<DoneOrders />} />
+            <Route path="/availableOrder" element={<AvailableOrder />} />
 
           </Route>
 
