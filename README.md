@@ -61,52 +61,58 @@ Each user has:
 ## 🖼️ Screenshots
 
 ### 🔐 Login / Register  
-![Login](./src/assets/imgs/Login-Register.png)
+<p align="center">
+  <img src="./src/assets/imgs/Login-Register.png" width="800"/>
+</p>
 
 ---
 
 ### 💼 Client Side — Pass Orders in Real Time  
 | Create Order | Real-Time Dispatch |
 |---------------|-------------------|
-| ![Pass Order](./src/assets/imgs/PassorderRealTime.png) | ![Available Orders](./src/assets/imgs/AvailableOrderForWorker.png) |
+| <img src="./src/assets/imgs/PassorderRealTime.png" width="400"/> | <img src="./src/assets/imgs/AvailableOrderForWorker.png" width="400"/> |
 
 ---
 
 ### 👷 Worker Side — Receive, Bid & Complete  
 | Real-Time Orders | Place Bid | Order Acquired | Completed |
 |------------------|-----------|----------------|------------|
-| ![RT Orders](./src/assets/imgs/RealTimeOrderForWorker.png) | ![Bid1](./src/assets/imgs/Bid1.png) | ![Acquired](./src/assets/imgs/AcquiredOrderForWorker.png) | ![Completed](./src/assets/imgs/CompletedOrderForworker.png) |
+| <img src="./src/assets/imgs/RealTimeOrderForWorker.png" width="300"/> | <img src="./src/assets/imgs/Bid1.png" width="300"/> | <img src="./src/assets/imgs/AcquiredOrderForWorker.png" width="300"/> | <img src="./src/assets/imgs/CompletedOrderForworker.png" width="300"/> |
 
 ---
 
 ### 💰 Bidding Showcase  
 | Bid 1 | Bid 2 |
 |--------|--------|
-| ![Bid1](./src/assets/imgs/Bid1.png) | ![Bid2](./src/assets/imgs/Bid2.png) |
+| <img src="./src/assets/imgs/Bid1.png" width="400"/> | <img src="./src/assets/imgs/Bid2.png" width="400"/> |
 
 ---
 
 ### 🧭 Admin Dashboard  
 | Users | Filter by Role | Add/Delete Category | Filter Orders |
 |--------|----------------|--------------------|----------------|
-| ![Users List](./src/assets/imgs/UsersListForAdm.png) | ![Filter Users](./src/assets/imgs/Filter%20UsersByRoleForAdm.png) | ![Add/Delete](./src/assets/imgs/DeleteCatgorieForAdm.png) | ![Filter Orders](./src/assets/imgs/FilterAllOrdersForAdm.png) |
+| <img src="./src/assets/imgs/UsersListForAdm.png" width="300"/> | <img src="./src/assets/imgs/Filter%20UsersByRoleForAdm.png" width="300"/> | <img src="./src/assets/imgs/DeleteCatgorieForAdm.png" width="300"/> | <img src="./src/assets/imgs/FilterAllOrdersForAdm.png" width="300"/> |
 
 ---
 
 ### 🛠️ Manage Services / Categories  
 | Add Service | Filter by Category |
 |--------------|--------------------|
-| ![Add Service](./src/assets/imgs/CreateNewServiceForAdm.png) | ![Filter Category](./src/assets/imgs/FilterByCategorieForAdm.png) |
+| <img src="./src/assets/imgs/CreateNewServiceForAdm.png" width="400"/> | <img src="./src/assets/imgs/FilterByCategorieForAdm.png" width="400"/> |
 
 ---
 
 ### 💬 Real-Time Chat System  
-![Chat](./src/assets/imgs/Real%20TimeChat%20App%20forAll.png)
+<p align="center">
+  <img src="./src/assets/imgs/Real%20TimeChat%20App%20forAll.png" width="800"/>
+</p>
 
 ---
 
 ### 📊 Worker Dashboard  
-![Worker Page](./src/assets/imgs/WorkerPage.png)
+<p align="center">
+  <img src="./src/assets/imgs/WorkerPage.png" width="800"/>
+</p>
 
 ---
 
