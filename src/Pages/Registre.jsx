@@ -208,7 +208,6 @@ const Registre = () => {
                       required
                       className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 dark:text-white border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       id="password"
-                      placeholder="******************"
                     />
                   </div>
                   <div className="md:ml-2">
